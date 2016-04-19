@@ -4,7 +4,7 @@
 class Tree
 {
   public:
-     Node root;
+     Node* root;
      
      void Tree()
      {
@@ -13,31 +13,33 @@ class Tree
      
      void ~Tree()
      {
-        delete();
+        delete(root);
      }
      void add(int info);
      void del(int info);
-     template<typename T> T getNode(int info);
+     template<typename T> T& getNode(int info);
      bool existe(int info);
 }
 
 template<typename T> class Node
 {
    public:
-      Node right;
-      Node left;
+      Node* right;
+      Node* left;
       int info;
       
-      void Node()
+      void Node(int i)
       {
          right = NULL;
          left = NULL;
-         info = NULL;
+         info = i;
       }
       
       void ~Node()
       {
-         delete();
+         delete(right);
+         delete(left);
+         delete(info);
       }
 }
 
