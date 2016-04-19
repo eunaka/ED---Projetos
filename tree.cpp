@@ -56,12 +56,31 @@ void Tree::del(int info)
 template<typename T>
 T& Tree::getNode(int info)
 {
+   Node* pnode = root;
    
+   wilhile(pnode != NULL)
+   {
+      if(pnode->info == info)
+         return pnode;
+      
+      else if(info < pnode->info)
+      {
+         pnode = pnode->left;
+      }
+      else
+      {
+         pnode = pnode->right;
+      }
+   }
+   return NULL;
 }
 
 bool Tree::existe(int info)
 {
-   
+   if(getNode(info) == NULL)
+      return false;
+   else
+      return true;
 }
 
 
