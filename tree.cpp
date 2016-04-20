@@ -1,4 +1,4 @@
-#include "arvore.h"
+#include "tree.h"
 
 void Tree::add(int info)
 {
@@ -50,7 +50,15 @@ void Tree::add(int info)
 
 void Tree::del(int info)
 {
-   
+   if(root == NULL)
+   {
+      cout << "Arvore nula" << endl;
+   }
+   else
+   {
+      Node* pnode = root;
+      
+   }
 }
 
 template<typename T>
