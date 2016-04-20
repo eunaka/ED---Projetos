@@ -18,6 +18,7 @@ class BinTree
         bool existe(T t);
         Node<T>* consultar(const T t, const Node<T>* node);
         void printaArvore();
+        Node<T>* getRoot();
 
 
 };
