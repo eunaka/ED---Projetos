@@ -28,6 +28,13 @@ Node<T>* BinTree<T> ::consultar(const T t, const Node<T>* node)
 template <typename T>
 void BinTree <T> ::inserir(T t)
 {
+  Node* pnode = this->root;
+  
+  
+}
 
-
+template <typename T>
+Node<T>* BinTree<T>::getRoot()
+{
+    return this->root;
 }
