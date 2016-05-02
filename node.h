@@ -8,13 +8,17 @@ class Node
         Node* left;
         Node* right;
         T info;
+      //  void setInfo(T info);
 
     public:
-        Node();
+        Node(T);
         ~Node();
-
-
-
+        Node* getLeftNode();
+        Node* getRightNode();
+        Node* getInfo();
+        void setLeftNode(Node<T>*);
+        void setRightNode(Node<T>*);
+        bool isLeaf();
 };
 
 #endif // NODE_H
