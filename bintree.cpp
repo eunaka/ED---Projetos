@@ -4,29 +4,18 @@
 #define LEFT_NULL  (!pnode->getLeftNode() && pnode->getRightNode())
 #define RIGHT_NULL (pnode->getLeftNode() && !pnode->getRightNode())
 
-
-
-/*
- * Construtor
- */
 template <typename T>
-BinTree <T> ::BinTree()
+BinTree<T> ::BinTree()
 {
   this->root = NULL;
 }
 
-/*
- * Retorna o node raiz da arvore
- */
 template <typename T>
 Node<T>* BinTree<T> :: getRoot()
 {
     return this->root;
 }
 
-/*
- * Altera o node raiz da arvore
- */
 template <typename T>
 void BinTree<T> :: setRoot(Node<T>* new_root)
 {
@@ -48,6 +37,7 @@ Node<T>* BinTree<T> ::consultar(const T info, const Node<T>* node)
   if(node == NULL)
     return node;
 }
+
 
 template <typename T>
 void BinTree <T> :: inserir(Node<T>* pnode , T info)
@@ -87,20 +77,18 @@ void BinTree <T> :: inserir(Node<T>* pnode , T info)
 
     if(info == pnode->getInfo())
     {
-        std::cout << "Elemento ja faz parte da arvore" << std::endl;
+        std::cout << "Elemento ja faz parte da arvore\n";
         return;
     }
 
 }
 
 
-/* retorna o node com menor informação
- * pela direita de pnode
- */
+/* retorna o node com menor informação pela direita de pnode */
 template <typename T>
 Node<T>* BinTree<T>::buscarMenor(Node<T>* pnode)
 {
-    /* começa procurando pela direita de pnode */
+    /* começa procurando pela direita de pnode(procura o menor do lado direito) */
     pnode = pnode->getRightNode();
 
     while(true)
@@ -114,9 +102,7 @@ Node<T>* BinTree<T>::buscarMenor(Node<T>* pnode)
 }
 
 
-/*retorna o nó com maior informação
- * pela esquerda de pnode
- */
+/*retorna o nó com maior informação pela esquerda de pnode */
 template <typename T>
 Node<T>* BinTree<T>::buscarMaior(Node<T>* pnode)
 {
@@ -158,15 +144,13 @@ Node<T>* BinTree<T>::buscarPai(Node<T>* pnode)
 template <typename T>
 bool BinTree<T>::remover(T info)
 {
-  Node<T>* root = this->getRoot();
-  Node<T>* pnode;
-  Node<T>* ppai;
-  Node<T>* menor;
-  Node<T>* maior;
-  Node<T>*ppai2;
+  Node<T>* pnode;     /* nó que será excluído, é retornado pelo método consultar() */
+  Node<T>* ppai;      /* ponteiro para o pai, é o pai de pnode, retornado pelo método buscarPai() */
+  Node<T>* node_subs; /* nó substituto, ocupará o lugar de pnode. Pode conter ou a maior ou a menor informação */
+  Node<T>* ppai_subs; /* pai do nó substituto, necessário para realizar algumas trocas */
 
-  pnode = consultar(info, root); /* encontra o nó que será excluído */
-  ppai = buscarPai(pnode);      /* encontra o pai de pnode, se pnode for raíz, retorna NULL */
+  pnode = consultar(info, this->root); /* encontra o nó que será excluído */
+  ppai = buscarPai(pnode);             /* encontra o pai de pnode, se pnode for raíz, retorna NULL */
 
   if(pnode == NULL)
       return false;
@@ -174,153 +158,99 @@ bool BinTree<T>::remover(T info)
   if(pnode->isLeaf())
   {
       delete pnode;
-      if(pnode == root)
+      if(pnode == this->root)
           setRoot(NULL);
-
-      return true;
   }
 
 
-  if(LEFT_NULL || pnode) //MACRO
-    {
-        menor = buscarMenor(pnode);/*o menor pode ser o proprio filho, ou seja o pai do menor é o proprio nó*/
-        ppai2 = buscarPai(menor);
-        ppai2->setLeftNode(menor->getRightNode());  /* como menor é o mais a esquerda, seu nó esquerdo é nulo,
-                                                     * então o seu pai(ppai2) deixa de apontar para ele(menor) e
-                                                     *  passa a apontar para seu nó direito(que pode ser nulo ou não)
-                                                     */
-        if(pnode == root)
-        {
-            menor->setLeftNode(root->getLeftNode());
-            menor->setRightNode(root->getRightNode());
-            setRoot(menor);
-            delete root;
+  /* node_subs será o menor nó do lado esquerdo */
+  else if(LEFT_NULL || pnode) //MACRO DEFINIDA NO INÍCIO DO ARQUIVO
+  {
+        node_subs = buscarMenor(pnode);
+        ppai_subs = buscarPai(node_subs);
+
+        /*  se o pai do menor já é o próprio pnode, para removê-lo
+         *  basta fazer com que o menor aponte para o nó esquerdo de pnode
+         *  OBS: o menor nao tem nenhum filho à esquerda
+        */
+        if(ppai_subs == pnode)
+        {   node_subs->setLeftNode(pnode->getLeftNode());
+            delete pnode;
+            return true;
+        }
+
+        ppai_subs->setLeftNode(node_subs->getRightNode());
+        /* como menor é o mais a esquerda, seu nó esquerdo é nulo,
+         * então o seu pai(ppai2) deixa de apontar para ele(menor) e
+         * passa a apontar para seu nó direito(que pode ser nulo ou não)
+         */
+
+        if(pnode == this->root)
+        {   /* menor é é a nova raíz */
+            node_subs->setLeftNode(root->getLeftNode());
+            node_subs->setRightNode(root->getRightNode());
+            this->setRoot(node_subs);
          }
 
         else
-        {
-            ppai->setRightNode(menor);
-           //repetindo, vi agora,mas nao mudei pq pode ser alguma coisa importante que eu n lembro ppai2->setLeftNode(menor->getRightNode());
-            menor->setRightNode(ppai2);
-            delete pnode;
+        {   /* verifica se pnode está do lado direito ou esquerdo do pai e o substitui pelo menor */
+            if(ppai->getRightNode() == pnode)
+                ppai->setRightNode(node_subs);
+            else
+                ppai->setLeftNode(node_subs);
+
+            node_subs->setRIghtNode(pnode->getRightNode());
+            node_subs->setLeftNode(pnode->getLeftNode());
         }
-            return true;
+
+        delete pnode;
+        return true;
     }
 
-  else if(RIGHT_NULL || pnode) //MACRO
+  /* nesse caso, o node_subs será o maior nó do lado esquerdo */
+  else if(RIGHT_NULL || pnode) //MACRO  DEFINIDA NO INÍCIO DO ARQUIVO
     {
-      maior = buscarMaior(pnode);
-      ppai2 = buscarPai(maior);
-      ppai2->setRighttNode(maior->getLeftNode()); /* como maior é o mais a direita, seu nó direito é nulo,
-                                                   * então o seu pai(ppai2) deixa de apontar para ele(maior) e
-                                                   * passa a apontar para seu nó esquerdo (que pode ser nulo ou não)
-                                                   */
+      node_subs = buscarMaior(pnode);
+      ppai_subs = buscarPai(node_subs);
 
+      /*  se o pai do maior já é o próprio pnode, para removê-lo
+       *  basta fazer com que o maior aponte para o nó direito de pnode
+       *  OBS: o maior nao tem nenhum filho à direita
+       */
+      if(ppai_subs == pnode)
+      {   node_subs->setRightNode(pnode->getRighttNode());
+          delete pnode;
+          return true;
+      }
 
-      if(pnode == root)
+      ppai_subs->setRighttNode(node_subs->getLeftNode());
+      /* como maior é o maior, não há mais ninguém na sua direita
+       * então o seu pai(ppai2) deixa de apontar para ele(maior) e
+       * passa a apontar para seu nó esquerdo (que pode ser nulo ou não)
+       */
+
+      if(pnode == this->root)
       {   /* maior agora é a raíz */
-          maior->setLeftNode(root->getLeftNode());
-          maior->setRightNode(root->getRightNode());
-          setRoot(maior);
-          delete root;
+          node_subs->setLeftNode(this->root->getLeftNode());
+          node_subs->setRightNode(this->root->getRightNode());
+          setRoot(node_subs);
        }
 
       else
       {
-          ppai->setLefttNode(maior);  /* nó pai não aponta para maior, invés de pnode */
-          maior->seLeftNode(ppai2); /* ocupa agora o lugar de pnode */
-          delete pnode;
+          /* verifica se pnode está do lado direito ou esquerdo do pai e o substitui pelo maior */
+          if(ppai->getLeftNode() == pnode)
+              ppai->setLefttNode(node_subs);
+
+          else
+              ppai->getRightNode(node_subs);
+
+          node_subs->seLeftNode(pnode->getLeftNode());
+          node_subs->setRightNode(pnode->getRightNode());
       }
-          return true;
+
+      delete pnode; /* chama o destrutor de pnode */
+      return true;
     }
 }
 
-
-/*
- * Imprime no console todos os nodes um
- * nivel abaixo de um node info, exceto
- * os seus descendentes. Tambem imprime
- * a quantidade de sobrinhos impressos.
- */
-template <typename T>
-void BinTree::Sobrinhos(T info)
-{ 
-   std::cout << std::endl;
-
-   int s = imprime_sobrinhos(this->root, getProfundidade(info), info);        /* esta funcao ja imprine os sobrinhos e retorna a quantidade de sobnrinhos */
-   
-   std::cout << std::endl << "Numero total de sobrinhos: " << s << std::endl;
-}
-
-/*
- * Retorna a profundidade de um elemento
- * da arvore. Se o elemento nao existir,
- * retorna -1. A raiz tem profundidade 0.
- */
-template <typename T>
-int BinTree::getProfundidade(T info)
-{
-   Node* pnode = this->root;
-   int profundidade = -1;
-   
-   while(pnode != NULL)
-   {
-      profundidade++;
-      if(info == pnode->getInfo())
-         return profundidade;
-         
-      else if(info < pnode->info)
-         pnode = pnode->getLeft();
-         
-      else
-         pnode = pnode->getRight();
-   }
-   
-   return -1;
-}
-
-/*
- * Imprime todos os nodes filhos de uma
- * profundidade, exceto do node info.
- * Retorna a quantidade de nodes impressos.
- */
-template <typename T>
-int BinTree::imprime_sobrinhos(Node<T>* pnode, int profundidade, T info)
-{
-   int numero_sobrinhos = 0;                                      /* cada node tio podera imprimir ate 2 sobrinhos           */
-   
-   if(profundidade < 1)                                           /* para ter sobrinhos tem que ter profundidade minima de 1 */
-      return 0;
-      
-   if(pnode == null)
-      return 0;
-      
-   if(getProfundidade(pnode->info) == profundidade)               /* profundidade do tio ser igual ao do node pai            */
-   {
-      if(pnode->getInfo() != info)                                /* garantir que o node atual eh um tio                     */
-      {
-         Node* tio = pnode;
-         Node* left = tio->getLeft();
-         Node* right = tio->getRight();
-      
-         if(letf != NULL)
-         {
-            std::cout << left->getInfo() << ", ";
-            numero_sobrinhos++;
-         }
-         if(right != NULL)
-         {
-            std::cout << right->getInfo() << ", ";
-            numero_sobrinhos++;
-         }
-         
-         return numero_sobrinhos;
-      }
-      else   return 0;                                            /* o pai nao eh tio, portanto 0 sobrinhos                  */
-   }
-   else
-   {                                                              /* retorna a soma dos ramos da esquerda e da direita       */
-      return imprime_sobrinhos(pnode->getLeft(), profundidade, info)
-             + imprime_sobrinhos(pnode->getRight(), profundidade, info);
-   }
-}
