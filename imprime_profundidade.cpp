@@ -60,7 +60,10 @@ private:
 bool BinTree::imprime_profundidade(Node<T>* pnode, int profundidade)
 {
    if(pnode == NULL)
+   {
+      std::cout << "  ";
       return false;
+   }
 
    if(getProfundidade(pnode->getInfo()) == profundidade)
    {
