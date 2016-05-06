@@ -2,32 +2,27 @@
 #define BINTREE_H
 #include "node.h"
 
-template <class T>
 class BinTree
 {
     private:
-        Node <T> root;
-        /* Métodos auxiliares da classe, usado apenas internamente pelos métodos da classe */
-        Node<T>* buscarMenor(Node<T>*);
-        Node<T>* buscarMaior(Node<T>*);
-        Node<T>* buscarPai(Node<T>*);
-        int imprime_sobrinhos(Node<T>* pnode, int profundidade, T info);
+        Node* root;
+        /* MÉTODOS AUXILIARES - Usados internamente pelos métodos públicos da classe */
+        Node* buscarPai(Node*);
+        Node* buscarMenor(Node*);
+        Node* buscarMaior(Node*);
+        int  imprime_sobrinhos(Node*, int, int);
+        void limpar(Node*);
 
     public:
         BinTree();
-       ~BinTree();
-
-      //  void printaArvore();
-        void inserir(Node<T>*, T);
-      //  void removerDireita(Node<T>*);
-      //  void removerEsquerda(Node<T>*);
-        bool remover(T);
-      //  bool existe(T);
-        void setRoot(Node<T>*);
-        Node<T>* consultar(const T, const Node<T>*);
-        Node<T>* getRoot();
-        void Sobrinhos(T info);
-        int getProfundidade(T info);
+        Node* consultar(int);
+        bool remover(int);
+        bool existe(int);
+        void sobrinhos(int);
+        void inserir(int);
+        void limparArvore();
+        int getProfundidade(int);
 };
+
 
 #endif // BINTREE_H
