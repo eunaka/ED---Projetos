@@ -1,23 +1,21 @@
 #ifndef NODE_H
 #define NODE_H
 
-template <typename T>
 class Node
 {
     private:
         Node* left;
         Node* right;
-        T info;
-      //  void setInfo(T info);
+        int info;
 
     public:
-        Node(T);
+        Node(int);
         ~Node();
         Node* getLeftNode();
         Node* getRightNode();
-        Node* getInfo();
-        void setLeftNode(Node<T>*);
-        void setRightNode(Node<T>*);
+        int getInfo();
+        void setLeftNode(Node*);
+        void setRightNode(Node*);
         bool isLeaf();
 };
 
